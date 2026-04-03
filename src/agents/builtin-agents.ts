@@ -3,6 +3,7 @@ import type { BuiltinAgentName, AgentOverrides, AgentFactory, AgentPromptMetadat
 import type { CategoriesConfig, GitMasterConfig } from "../config/schema"
 import type { LoadedSkill } from "../features/opencode-skill-loader/types"
 import type { BrowserAutomationProvider } from "../config/schema"
+import type { AgentRulesContext } from "../features/agent-rules"
 import { createSisyphusAgent } from "./sisyphus"
 import { createOracleAgent, ORACLE_PROMPT_METADATA } from "./oracle"
 import { createLibrarianAgent, LIBRARIAN_PROMPT_METADATA } from "./librarian"
@@ -71,7 +72,8 @@ export async function createBuiltinAgents(
   uiSelectedModel?: string,
   disabledSkills?: Set<string>,
   useTaskSystem = false,
-  disableOmoEnv = false
+  disableOmoEnv = false,
+  agentRulesContext?: AgentRulesContext
 ): Promise<Record<string, AgentConfig>> {
 
   const connectedProviders = readConnectedProvidersCache()
@@ -176,6 +178,17 @@ export async function createBuiltinAgents(
   })
   if (atlasConfig) {
     result["atlas"] = atlasConfig
+  }
+
+  if (agentRulesContext) {
+    for (const [agentName, agentConfig] of Object.entries(result)) {
+      const rulesContent = agentRulesContext.resolveRules(agentName, undefined)
+      if (rulesContent && agentConfig.instructions) {
+        agentConfig.instructions = `${agentConfig.instructions}\n\n${rulesContent}`
+      } else if (rulesContent) {
+        agentConfig.instructions = rulesContent
+      }
+    }
   }
 
   return result
