@@ -7,3 +7,5 @@ export {
   AGENT_RULES_USER_DIRS,
 } from "./constants";
 export { discoverAgentRuleFiles } from "./rule-discovery";
+export { matchesAgent, matchesAgentOrCategory, matchesCategory } from "./rule-matcher";
+export { deduplicateRules } from "./rule-dedup";
