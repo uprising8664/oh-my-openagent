@@ -185,6 +185,7 @@ export function createDelegateTask(options: DelegateTaskToolOptions): ToolDefini
       let isUnstableAgent = false
       let fallbackChain: import("../../shared/model-requirements").FallbackEntry[] | undefined
       let maxPromptTokens: number | undefined
+      let agentRulesContent: string | undefined
 
       if (args.category) {
         const resolution = await resolveCategoryExecution(args, options, inheritedModel, systemDefaultModel)
@@ -213,6 +214,7 @@ export function createDelegateTask(options: DelegateTaskToolOptions): ToolDefini
         })
 
         if (isUnstableAgent && isRunInBackgroundExplicitlyFalse) {
+          agentRulesContent = options.agentRulesContext?.resolveRules(agentToUse, args.category) || undefined
           const systemContent = buildSystemContent({
             skillContent,
             skillContents,
@@ -222,6 +224,7 @@ export function createDelegateTask(options: DelegateTaskToolOptions): ToolDefini
             model: categoryModel,
             availableCategories,
             availableSkills,
+            agentRulesContent,
           })
           return executeUnstableAgentTask(args, ctx, options, parentContext, agentToUse, categoryModel, systemContent, actualModel)
         }
@@ -235,6 +238,7 @@ export function createDelegateTask(options: DelegateTaskToolOptions): ToolDefini
         fallbackChain = resolution.fallbackChain
       }
 
+      agentRulesContent = options.agentRulesContext?.resolveRules(agentToUse, args.category) || undefined
       const systemContent = buildSystemContent({
         skillContent,
         skillContents,
@@ -244,6 +248,7 @@ export function createDelegateTask(options: DelegateTaskToolOptions): ToolDefini
         model: categoryModel,
         availableCategories,
         availableSkills,
+        agentRulesContent,
       })
 
       if (runInBackground) {
