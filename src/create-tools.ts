@@ -2,12 +2,14 @@ import type { AvailableCategory, AvailableSkill } from "./agents/dynamic-agent-p
 import type { OhMyOpenCodeConfig } from "./config"
 import type { BrowserAutomationProvider } from "./config/schema/browser-automation"
 import type { LoadedSkill } from "./features/opencode-skill-loader/types"
+import type { AgentRulesContext } from "./features/agent-rules"
 import type { PluginContext, ToolsRecord } from "./plugin/types"
 import type { Managers } from "./create-managers"
 
 import { createAvailableCategories } from "./plugin/available-categories"
 import { createSkillContext } from "./plugin/skill-context"
 import { createToolRegistry } from "./plugin/tool-registry"
+import { createAgentRulesContext } from "./features/agent-rules"
 
 export type CreateToolsResult = {
   filteredTools: ToolsRecord
@@ -17,6 +19,7 @@ export type CreateToolsResult = {
   browserProvider: BrowserAutomationProvider
   disabledSkills: Set<string>
   taskSystemEnabled: boolean
+  agentRulesContext: AgentRulesContext
 }
 
 export async function createTools(args: {
@@ -31,6 +34,12 @@ export async function createTools(args: {
     pluginConfig,
   })
 
+  const agentRulesContext = await createAgentRulesContext(
+    ctx.directory,
+    pluginConfig.agent_rules?.dirs ?? [],
+    pluginConfig.agent_rules?.disabled ?? [],
+  )
+
   const availableCategories = createAvailableCategories(pluginConfig)
 
   const { filteredTools, taskSystemEnabled } = createToolRegistry({
@@ -39,6 +48,7 @@ export async function createTools(args: {
     managers,
     skillContext,
     availableCategories,
+    agentRulesContext,
   })
 
   return {
@@ -49,5 +59,6 @@ export async function createTools(args: {
     browserProvider: skillContext.browserProvider,
     disabledSkills: skillContext.disabledSkills,
     taskSystemEnabled,
+    agentRulesContext,
   }
 }

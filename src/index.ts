@@ -60,7 +60,6 @@ const OhMyOpenCodePlugin: Plugin = async (ctx) => {
     ctx,
     pluginConfig,
     tmuxConfig,
-    modelCacheState,
     backgroundNotificationHookEnabled: isHookEnabled("background-notification"),
   })
 
@@ -91,6 +90,8 @@ const OhMyOpenCodePlugin: Plugin = async (ctx) => {
   const pluginInterface = createPluginInterface({
     ctx,
     pluginConfig,
+    modelCacheState,
+    agentRulesContext: toolsResult.agentRulesContext,
     firstMessageVariantGate,
     managers,
     hooks,

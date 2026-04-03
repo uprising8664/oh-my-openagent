@@ -1,5 +1,7 @@
 import type { PluginContext, PluginInterface, ToolsRecord } from "./plugin/types"
 import type { OhMyOpenCodeConfig } from "./config"
+import type { AgentRulesContext } from "./features/agent-rules"
+import type { ModelCacheState } from "./plugin-state"
 
 import { createChatParamsHandler } from "./plugin/chat-params"
 import { createChatHeadersHandler } from "./plugin/chat-headers"
@@ -10,6 +12,7 @@ import { createSystemTransformHandler } from "./plugin/system-transform"
 import { createEventHandler } from "./plugin/event"
 import { createToolExecuteAfterHandler } from "./plugin/tool-execute-after"
 import { createToolExecuteBeforeHandler } from "./plugin/tool-execute-before"
+import { createConfigHandler } from "./plugin-handlers"
 
 import type { CreatedHooks } from "./create-hooks"
 import type { Managers } from "./create-managers"
@@ -17,6 +20,8 @@ import type { Managers } from "./create-managers"
 export function createPluginInterface(args: {
   ctx: PluginContext
   pluginConfig: OhMyOpenCodeConfig
+  modelCacheState: ModelCacheState
+  agentRulesContext: AgentRulesContext
   firstMessageVariantGate: {
     shouldOverride: (sessionID: string) => boolean
     markApplied: (sessionID: string) => void
@@ -27,8 +32,15 @@ export function createPluginInterface(args: {
   hooks: CreatedHooks
   tools: ToolsRecord
 }): PluginInterface {
-  const { ctx, pluginConfig, firstMessageVariantGate, managers, hooks, tools } =
+  const { ctx, pluginConfig, modelCacheState, agentRulesContext, firstMessageVariantGate, managers, hooks, tools } =
     args
+
+  const configHandler = createConfigHandler({
+    ctx: { directory: ctx.directory, client: ctx.client },
+    pluginConfig,
+    modelCacheState,
+    agentRulesContext,
+  })
 
   return {
     tool: tools,
@@ -60,7 +72,7 @@ export function createPluginInterface(args: {
 
     "experimental.chat.system.transform": createSystemTransformHandler(),
 
-    config: managers.configHandler,
+    config: configHandler,
 
     event: createEventHandler({
       ctx,
