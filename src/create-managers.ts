@@ -1,5 +1,4 @@
 import type { OhMyOpenCodeConfig } from "./config"
-import type { ModelCacheState } from "./plugin-state"
 import type { PluginContext, TmuxConfig } from "./plugin/types"
 
 import type { SubagentSessionCreatedEvent } from "./features/background-agent"
@@ -8,7 +7,6 @@ import { SkillMcpManager } from "./features/skill-mcp-manager"
 import { initTaskToastManager } from "./features/task-toast-manager"
 import { TmuxSessionManager } from "./features/tmux-subagent"
 import { registerManagerForCleanup } from "./features/background-agent/process-cleanup"
-import { createConfigHandler } from "./plugin-handlers"
 import { log } from "./shared"
 import { markServerRunningInProcess } from "./shared/tmux/tmux-utils/server-health"
 
@@ -18,7 +16,6 @@ type CreateManagersDeps = {
   TmuxSessionManagerClass: typeof TmuxSessionManager
   initTaskToastManagerFn: typeof initTaskToastManager
   registerManagerForCleanupFn: typeof registerManagerForCleanup
-  createConfigHandlerFn: typeof createConfigHandler
   markServerRunningInProcessFn: typeof markServerRunningInProcess
 }
 
@@ -28,7 +25,6 @@ const defaultCreateManagersDeps: CreateManagersDeps = {
   TmuxSessionManagerClass: TmuxSessionManager,
   initTaskToastManagerFn: initTaskToastManager,
   registerManagerForCleanupFn: registerManagerForCleanup,
-  createConfigHandlerFn: createConfigHandler,
   markServerRunningInProcessFn: markServerRunningInProcess,
 }
 
@@ -36,18 +32,16 @@ export type Managers = {
   tmuxSessionManager: TmuxSessionManager
   backgroundManager: BackgroundManager
   skillMcpManager: SkillMcpManager
-  configHandler: ReturnType<typeof createConfigHandler>
 }
 
 export function createManagers(args: {
   ctx: PluginContext
   pluginConfig: OhMyOpenCodeConfig
   tmuxConfig: TmuxConfig
-  modelCacheState: ModelCacheState
   backgroundNotificationHookEnabled: boolean
   deps?: Partial<CreateManagersDeps>
 }): Managers {
-  const { ctx, pluginConfig, tmuxConfig, modelCacheState, backgroundNotificationHookEnabled } = args
+  const { ctx, pluginConfig, tmuxConfig, backgroundNotificationHookEnabled } = args
   const deps = { ...defaultCreateManagersDeps, ...args.deps }
 
   if (tmuxConfig.enabled) {
@@ -101,16 +95,9 @@ export function createManagers(args: {
 
   const skillMcpManager = new deps.SkillMcpManagerClass()
 
-  const configHandler = deps.createConfigHandlerFn({
-    ctx: { directory: ctx.directory, client: ctx.client },
-    pluginConfig,
-    modelCacheState,
-  })
-
   return {
     tmuxSessionManager,
     backgroundManager,
     skillMcpManager,
-    configHandler,
   }
 }

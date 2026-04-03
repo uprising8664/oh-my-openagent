@@ -1,4 +1,5 @@
 import type { OhMyOpenCodeConfig } from "../config";
+import type { AgentRulesContext } from "../features/agent-rules";
 import { setAdditionalAllowedMcpEnvVars } from "../features/claude-code-mcp-loader";
 import type { ModelCacheState } from "../plugin-state";
 import { log } from "../shared";
@@ -16,10 +17,11 @@ export interface ConfigHandlerDeps {
   ctx: { directory: string; client?: any };
   pluginConfig: OhMyOpenCodeConfig;
   modelCacheState: ModelCacheState;
+  agentRulesContext?: AgentRulesContext;
 }
 
 export function createConfigHandler(deps: ConfigHandlerDeps) {
-  const { ctx, pluginConfig, modelCacheState } = deps;
+  const { ctx, pluginConfig, modelCacheState, agentRulesContext } = deps;
 
   return async (config: Record<string, unknown>) => {
     const formatterConfig = config.formatter;
@@ -35,6 +37,7 @@ export function createConfigHandler(deps: ConfigHandlerDeps) {
       pluginConfig,
       ctx,
       pluginComponents,
+      agentRulesContext,
     });
 
     applyToolConfig({ config, pluginConfig, agentResult });

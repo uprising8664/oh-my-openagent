@@ -4988,6 +4988,30 @@
       },
       "additionalProperties": false
     },
+    "agent_rules": {
+      "type": "object",
+      "properties": {
+        "dirs": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "disabled": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "dirs",
+        "disabled"
+      ],
+      "additionalProperties": false
+    },
     "categories": {
       "type": "object",
       "propertyNames": {
