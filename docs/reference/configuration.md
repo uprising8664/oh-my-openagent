@@ -26,6 +26,7 @@ Complete reference for Oh My OpenCode plugin configuration. During the rename tr
   - [Git Master](#git-master)
   - [Comment Checker](#comment-checker)
   - [Notification](#notification)
+  - [Agent Rules](#agent-rules)
   - [MCPs](#mcps)
   - [LSP](#lsp)
 - [Advanced](#advanced)
@@ -594,6 +595,26 @@ Force-enable session notifications:
 ```
 
 `force_enable` (`false`) - force session-notification even if external notification plugins are detected.
+
+### Agent Rules
+
+Automatically inject markdown rules into agent prompts based on agent name or category.
+
+```jsonc
+{
+  "agent_rules": {
+    "dirs": ["path/to/extra/rules"],
+    "disabled": ["rule-stem-name"]
+  }
+}
+```
+
+| Option | Type | Description |
+| :--- | :--- | :--- |
+| `dirs` | array | Extra directories to scan for rule files |
+| `disabled` | array | Rule stem names (filename without extension) to disable |
+
+Rules are also auto-scanned from convention directories like `.sisyphus/rules/`, `.opencode/rules/`, and `~/.config/opencode/rules/`. See [Agent Rules Examples](../examples/agent-rules.md) for details.
 
 ### MCPs
 

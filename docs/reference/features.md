@@ -966,6 +966,23 @@ project/
 │       └── Button.tsx     # Reading this injects all 3
 ```
 
+### Agent Rules
+
+Automatically injects markdown rule files into agent prompts based on the agent's name or category. Rules are discovered from convention directories, filtered by YAML frontmatter, and injected additively.
+
+```markdown
+---
+agents: [sisyphus, oracle]
+categories: [deep]
+description: "Human-readable description"
+---
+
+- Always use async/await
+- Prefer functional patterns
+```
+
+Rules are additive: global + category + agent-specific all concatenate in the prompt. See [Agent Rules Examples](../examples/agent-rules.md) for details.
+
 ### Conditional Rules
 
 Inject rules from `.claude/rules/` when conditions match:
