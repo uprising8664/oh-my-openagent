@@ -24,6 +24,7 @@ import {
 } from "./agent-override-protection";
 import { buildPrometheusAgentConfig } from "./prometheus-agent-config-builder";
 import { buildPlanDemoteConfig } from "./plan-model-inheritance";
+import type { AgentRulesContext } from "../features/agent-rules";
 
 type AgentConfigRecord = Record<string, Record<string, unknown> | undefined> & {
   build?: Record<string, unknown>;
@@ -43,6 +44,7 @@ export async function applyAgentConfig(params: {
   pluginConfig: OhMyOpenCodeConfig;
   ctx: { directory: string; client?: any };
   pluginComponents: PluginComponents;
+  agentRulesContext?: AgentRulesContext;
 }): Promise<Record<string, unknown>> {
   const migratedDisabledAgents = (params.pluginConfig.disabled_agents ?? []).map(
     (agent) => {
@@ -137,6 +139,7 @@ export async function applyAgentConfig(params: {
     disabledSkills,
     useTaskSystem,
     disableOmoEnv,
+    params.agentRulesContext,
   );
 
   const disabledAgentNames = new Set(
