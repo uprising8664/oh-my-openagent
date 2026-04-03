@@ -23,6 +23,10 @@ const PARTIAL_STRING_ARRAY_KEYS = new Set([
   "mcp_env_allowlist",
 ]);
 
+function mergeStringArrays(base: string[] | undefined, override: string[] | undefined): string[] {
+  return [...new Set([...(base ?? []), ...(override ?? [])])]
+}
+
 export function parseConfigPartially(
   rawConfig: Record<string, unknown>
 ): OhMyOpenCodeConfig | null {
@@ -118,49 +122,25 @@ export function mergeConfigs(
     ...base,
     ...override,
     agents: deepMerge(base.agents, override.agents),
+    agent_rules: (() => {
+      const merged = deepMerge(base.agent_rules, override.agent_rules)
+      if (!merged) {
+        return undefined
+      }
+
+      return {
+        ...merged,
+        disabled: mergeStringArrays(base.agent_rules?.disabled, override.agent_rules?.disabled),
+      }
+    })(),
     categories: deepMerge(base.categories, override.categories),
-    disabled_agents: [
-      ...new Set([
-        ...(base.disabled_agents ?? []),
-        ...(override.disabled_agents ?? []),
-      ]),
-    ],
-    disabled_mcps: [
-      ...new Set([
-        ...(base.disabled_mcps ?? []),
-        ...(override.disabled_mcps ?? []),
-      ]),
-    ],
-    disabled_hooks: [
-      ...new Set([
-        ...(base.disabled_hooks ?? []),
-        ...(override.disabled_hooks ?? []),
-      ]),
-    ],
-    disabled_commands: [
-      ...new Set([
-        ...(base.disabled_commands ?? []),
-        ...(override.disabled_commands ?? []),
-      ]),
-    ],
-    disabled_skills: [
-      ...new Set([
-        ...(base.disabled_skills ?? []),
-        ...(override.disabled_skills ?? []),
-      ]),
-    ],
-    disabled_tools: [
-      ...new Set([
-        ...(base.disabled_tools ?? []),
-        ...(override.disabled_tools ?? []),
-      ]),
-    ],
-    mcp_env_allowlist: [
-      ...new Set([
-        ...(base.mcp_env_allowlist ?? []),
-        ...(override.mcp_env_allowlist ?? []),
-      ]),
-    ],
+    disabled_agents: mergeStringArrays(base.disabled_agents, override.disabled_agents),
+    disabled_mcps: mergeStringArrays(base.disabled_mcps, override.disabled_mcps),
+    disabled_hooks: mergeStringArrays(base.disabled_hooks, override.disabled_hooks),
+    disabled_commands: mergeStringArrays(base.disabled_commands, override.disabled_commands),
+    disabled_skills: mergeStringArrays(base.disabled_skills, override.disabled_skills),
+    disabled_tools: mergeStringArrays(base.disabled_tools, override.disabled_tools),
+    mcp_env_allowlist: mergeStringArrays(base.mcp_env_allowlist, override.mcp_env_allowlist),
     claude_code: deepMerge(base.claude_code, override.claude_code),
   };
 }
