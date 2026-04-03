@@ -6,3 +6,4 @@ export {
   AGENT_RULES_FILE_EXTENSIONS,
   AGENT_RULES_USER_DIRS,
 } from "./constants";
+export { discoverAgentRuleFiles } from "./rule-discovery";
