@@ -2,6 +2,7 @@ import { z } from "zod"
 import { AnyMcpNameSchema } from "../../mcp/types"
 import { BuiltinSkillNameSchema } from "./agent-names"
 import { AgentOverridesSchema } from "./agent-overrides"
+import { AgentRulesConfigSchema } from "./agent-rules"
 import { BabysittingConfigSchema } from "./babysitting"
 import { BackgroundTaskConfigSchema } from "./background-task"
 import { BrowserAutomationConfigSchema } from "./browser-automation"
@@ -42,6 +43,7 @@ export const OhMyOpenCodeConfigSchema = z.object({
   /** Enable model fallback on API errors (default: false). Set to true to enable automatic model switching when model errors occur. */
   model_fallback: z.boolean().optional(),
   agents: AgentOverridesSchema.optional(),
+  agent_rules: AgentRulesConfigSchema.optional(),
   categories: CategoriesConfigSchema.optional(),
   claude_code: ClaudeCodeConfigSchema.optional(),
   sisyphus_agent: SisyphusAgentConfigSchema.optional(),
