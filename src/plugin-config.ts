@@ -23,8 +23,8 @@ const PARTIAL_STRING_ARRAY_KEYS = new Set([
   "mcp_env_allowlist",
 ]);
 
-function mergeStringArrays(base: string[] | undefined, override: string[] | undefined): string[] {
-  return [...new Set([...(base ?? []), ...(override ?? [])])]
+function mergeStringArrays<T extends string>(base: T[] | undefined, override: T[] | undefined): T[] {
+  return [...new Set([...(base ?? []), ...(override ?? [])])] as T[]
 }
 
 export function parseConfigPartially(
