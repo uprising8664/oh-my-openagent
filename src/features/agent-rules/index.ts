@@ -9,3 +9,6 @@ export {
 export { discoverAgentRuleFiles } from "./rule-discovery";
 export { matchesAgent, matchesAgentOrCategory, matchesCategory } from "./rule-matcher";
 export { deduplicateRules } from "./rule-dedup";
+export { parseAgentRuleFrontmatter } from "./rule-parser";
+export { resolveAgentRules } from "./rule-resolver";
+export { createAgentRulesContext } from "./create-agent-rules-context";
