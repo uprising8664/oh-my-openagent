@@ -7,6 +7,7 @@ import type {
 import type { OhMyOpenCodeConfig } from "../config"
 import { isInteractiveBashEnabled } from "../create-runtime-tmux-config"
 import type { PluginContext, ToolsRecord } from "./types"
+import type { AgentRulesContext } from "../features/agent-rules"
 
 import {
   builtinTools,
@@ -105,6 +106,7 @@ export function createToolRegistry(args: {
   skillContext: SkillContext
   availableCategories: AvailableCategory[]
   interactiveBashEnabled?: boolean
+  agentRulesContext?: AgentRulesContext
 }): ToolRegistryResult {
   const {
     ctx,
@@ -113,7 +115,9 @@ export function createToolRegistry(args: {
     skillContext,
     availableCategories,
     interactiveBashEnabled = isInteractiveBashEnabled(),
+    agentRulesContext,
   } = args
+
   const backgroundTools = createBackgroundTools(managers.backgroundManager, ctx.client)
   const callOmoAgent = createCallOmoAgent(
     ctx,
@@ -142,6 +146,7 @@ export function createToolRegistry(args: {
     availableSkills: skillContext.availableSkills,
     sisyphusAgentConfig: pluginConfig.sisyphus_agent,
     syncPollTimeoutMs: pluginConfig.background_task?.syncPollTimeoutMs,
+    agentRulesContext,
     onSyncSessionCreated: async (event) => {
       log("[index] onSyncSessionCreated callback", {
         sessionID: event.sessionID,

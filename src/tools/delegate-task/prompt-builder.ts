@@ -61,6 +61,7 @@ export function buildSystemContent(input: BuildSystemContentInput): string | und
     skillContents,
     categoryPromptAppend,
     agentsContext,
+    agentRulesContent,
     maxPromptTokens,
     model,
     agentName,
@@ -92,6 +93,7 @@ export function buildSystemContent(input: BuildSystemContentInput): string | und
       categoryPromptAppend,
       agentsContext: effectiveAgentsContext,
       planAgentPrepend,
+      agentRulesContent,
     },
     effectiveMaxPromptTokens
   )

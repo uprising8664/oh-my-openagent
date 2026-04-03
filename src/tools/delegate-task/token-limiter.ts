@@ -59,17 +59,19 @@ export function buildSystemContentWithTokenLimit(
       : []
   const categoryPromptAppend = input.categoryPromptAppend ?? ""
   const agentsContext = input.agentsContext ?? input.planAgentPrepend ?? ""
+  const agentRulesContent = input.agentRulesContent ?? ""
 
   if (maxTokens === undefined) {
-    return joinSystemParts([agentsContext, ...skillParts, categoryPromptAppend])
+    return joinSystemParts([agentsContext, agentRulesContent, ...skillParts, categoryPromptAppend])
   }
 
   let nextSkills = [...skillParts]
   let nextCategoryPromptAppend = categoryPromptAppend
+  let nextAgentRulesContent = agentRulesContent
   let nextAgentsContext = agentsContext
 
   const buildCurrentContent = (): string | undefined =>
-    joinSystemParts([nextAgentsContext, ...nextSkills, nextCategoryPromptAppend])
+    joinSystemParts([nextAgentsContext, nextAgentRulesContent, ...nextSkills, nextCategoryPromptAppend])
 
   let systemContent = buildCurrentContent()
   if (!systemContent) {
@@ -100,6 +102,15 @@ export function buildSystemContentWithTokenLimit(
 
   if (overflowTokens > 0 && nextCategoryPromptAppend) {
     nextCategoryPromptAppend = reduceSegmentToFitBudget(nextCategoryPromptAppend, overflowTokens)
+    systemContent = buildCurrentContent()
+    if (!systemContent) {
+      return undefined
+    }
+    overflowTokens = estimateTokenCount(systemContent) - maxTokens
+  }
+
+  if (overflowTokens > 0 && nextAgentRulesContent) {
+    nextAgentRulesContent = reduceSegmentToFitBudget(nextAgentRulesContent, overflowTokens)
     systemContent = buildCurrentContent()
     if (!systemContent) {
       return undefined
